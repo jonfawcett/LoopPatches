@@ -1,0 +1,90 @@
+From 81800dddab5c6de6036ca399512e611077f760ab Mon Sep 17 00:00:00 2001
+From: Jon Fawcett <jonfawcett10@gmail.com>
+Date: Tue, 21 Sep 2021 12:20:08 -0400
+Subject: [PATCH] Nightscout Profile Upload Patch
+
+---
+ Loop/Managers/LoopDataManager.swift       | 16 ++++++++++++++++
+ Loop/Managers/NightscoutDataManager.swift |  4 ++--
+ 2 files changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/Loop/Managers/LoopDataManager.swift b/Loop/Managers/LoopDataManager.swift
+index bf44d9f17b..ef861a680a 100644
+--- a/Loop/Managers/LoopDataManager.swift
++++ b/Loop/Managers/LoopDataManager.swift
+@@ -152,6 +152,9 @@ final class LoopDataManager {
+             }
+             UserDefaults.appGroup?.loopSettings = settings
+             notify(forChange: .preferences)
++            if settings.overridePresets != oldValue.overridePresets || settings.glucoseTargetRangeSchedule != oldValue.glucoseTargetRangeSchedule {
++                self.notifyUpload(forChange: .preferences)
++            }
+             AnalyticsManager.shared.didChangeLoopSettings(from: oldValue, to: settings)
+         }
+     }
+@@ -330,6 +333,7 @@ extension LoopDataManager {
+             doseStore.basalProfile = newValue
+             UserDefaults.appGroup?.basalRateSchedule = newValue
+             notify(forChange: .preferences)
++            notifyUpload(forChange: .preferences)
+ 
+             if let newValue = newValue, let oldValue = doseStore.basalProfile, newValue.items != oldValue.items {
+                 AnalyticsManager.shared.didChangeBasalRateSchedule()
+@@ -357,6 +361,7 @@ extension LoopDataManager {
+             carbsOnBoard = nil
+ 
+             notify(forChange: .preferences)
++            notifyUpload(forChange: .preferences)
+         }
+     }
+ 
+@@ -408,6 +413,7 @@ extension LoopDataManager {
+                 self.insulinEffect = nil
+ 
+                 self.notify(forChange: .preferences)
++                self.notifyUpload(forChange: .preferences)
+             }
+         }
+     }
+@@ -859,6 +865,15 @@ extension LoopDataManager {
+             ]
+         )
+     }
++    
++    private func notifyUpload(forChange context: LoopUpdateContext) {
++        NotificationCenter.default.post(name: .LoopDataUpload,
++            object: self,
++            userInfo: [
++                type(of: self).LoopUpdateContextKey: context.rawValue
++            ]
++        )
++    }
+ 
+     /// Computes amount of insulin from boluses that have been issued and not confirmed, and
+     /// remaining insulin delivery from temporary basal rate adjustments above scheduled rate
+@@ -1572,6 +1587,7 @@ extension LoopDataManager {
+ 
+ extension Notification.Name {
+     static let LoopDataUpdated = Notification.Name(rawValue: "com.loopkit.Loop.LoopDataUpdated")
++    static let LoopDataUpload = Notification.Name(rawValue: "com.loopkit.Loop.LoopDataUpload")
+     static let LoopRunning = Notification.Name(rawValue: "com.loopkit.Loop.LoopRunning")
+     static let LoopCompleted = Notification.Name(rawValue: "com.loopkit.Loop.LoopCompleted")
+ }
+diff --git a/Loop/Managers/NightscoutDataManager.swift b/Loop/Managers/NightscoutDataManager.swift
+index e2d020d398..48823116ee 100644
+--- a/Loop/Managers/NightscoutDataManager.swift
++++ b/Loop/Managers/NightscoutDataManager.swift
+@@ -35,11 +35,11 @@ final class NightscoutDataManager {
+         self.deviceManager = deviceDataManager
+ 
+         NotificationCenter.default.addObserver(self, selector: #selector(loopCompleted(_:)), name: .LoopCompleted, object: deviceDataManager.loopManager)
+-        NotificationCenter.default.addObserver(self, selector: #selector(loopDataUpdated(_:)), name: .LoopDataUpdated, object: deviceDataManager.loopManager)
++        NotificationCenter.default.addObserver(self, selector: #selector(loopDataUpload(_:)), name: .LoopDataUpload, object: deviceDataManager.loopManager)
+     }
+ 
+ 
+-    @objc func loopDataUpdated(_ note: Notification) {
++    @objc func loopDataUpload(_ note: Notification) {
+         guard
+             let rawContext = note.userInfo?[LoopDataManager.LoopUpdateContextKey] as? LoopDataManager.LoopUpdateContext.RawValue,
+             let context = LoopDataManager.LoopUpdateContext(rawValue: rawContext),
