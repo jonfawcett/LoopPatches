@@ -1,5 +1,13 @@
 # Loop Patches
 
+***
+
+# Do not use these patches for Loop Dev or the upcoming Loop v 3.0
+
+New patches available at [https://github.com/CustomTypeOne/LoopPatches[(https://github.com/CustomTypeOne/LoopPatches)
+
+***
+
 Using the patch command in git allows you to apply code from other developers, pull requests, or even saved customizations you regularly make. If you are applying code from other developers, please ensure that you look through the code and understand what the code changes are before incorporating it. It is your responsibility to understand and implement your Loop system and you do this at your own risk.
 
 # Automatic Dose Strategy Switching
