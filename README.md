@@ -4,7 +4,7 @@
 
 # Do not use these patches for Loop Dev or the upcoming Loop v 3.0
 
-New patches available at [https://github.com/CustomTypeOne/LoopPatches](https://github.com/CustomTypeOne/LoopPatches)
+New patches for Dev and future versions are available at [https://github.com/CustomTypeOne/LoopPatches](https://github.com/CustomTypeOne/LoopPatches)
 
 ***
 
