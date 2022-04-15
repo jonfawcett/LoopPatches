@@ -8,7 +8,9 @@ New patches for Dev and future versions are available at [https://github.com/Cus
 
 ***
 
-Using the patch command in git allows you to apply code from other developers, pull requests, or even saved customizations you regularly make. If you are applying code from other developers, please ensure that you look through the code and understand what the code changes are before incorporating it. It is your responsibility to understand and implement your Loop system and you do this at your own risk.
+```diff
+- Using the patch command in git allows you to apply code from other developers, pull requests, or even saved customizations you regularly make. If you are applying code from other developers, please ensure that you look through the code and understand what the code changes are before incorporating it. It is your responsibility to understand and implement your Loop system and you do this at your own risk. As of 2022, I am no longer maintaining this current patch due to work on the upcoming Loop 3.0. I expect this will continue to work for Loop 2.x but it is your responsibility to test it before use.
+```
 
 # Automatic Dose Strategy Switching
 ABSwitcherPatch.txt
